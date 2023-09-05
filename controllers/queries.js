@@ -33,8 +33,8 @@ export const getQntAtual = (req, res) => {
     const dataAtual = new Date();
     const ano = dataAtual.getFullYear();
     let mes = dataAtual.getMonth() + 1;
-    if (mes < 10){
-        mes = '0'+ mes;
+    if (mes < 10) {
+        mes = '0' + mes;
     }
     const q = `SELECT * FROM membros_ativos_mes WHERE ano = '${ano}' AND mes = '${mes}';`;
     // res.send(q);
@@ -48,8 +48,8 @@ export const getQntAtual2 = (req, res) => {
     const dataAtual = new Date();
     const ano = dataAtual.getFullYear();
     let mes = dataAtual.getMonth() + 1;
-    if (mes < 10){
-        mes = '0'+ mes;
+    if (mes < 10) {
+        mes = '0' + mes;
     }
     const q = `SELECT * FROM membros_inativos_mes WHERE ano = '${ano}' AND mes = '${mes}';`;
     // res.send(q);
@@ -63,15 +63,15 @@ export const getQntAnterior = (req, res) => {
     const dataAtual = new Date();
     let ano = dataAtual.getFullYear();
     let mes = dataAtual.getMonth() + 1;
-    if (mes < 10 && mes > 1){
+    if (mes < 10 && mes > 1) {
         mes = mes - 1;
-        mes = '0'+ mes;
-    } else if(mes == 1){
+        mes = '0' + mes;
+    } else if (mes == 1) {
         ano = dataAtual.getFullYear() - 1;
         mes = 12;
-    }else if(mes == 10){
+    } else if (mes == 10) {
         mes = '0' + (mes - 1);
-    }else{
+    } else {
         mes = mes - 1;
     }
     const q = `SELECT * FROM membros_ativos_mes WHERE ano = '${ano}' AND mes = '${mes}';`;
@@ -86,8 +86,8 @@ export const getInativos = (req, res) => {
     const dataAtual = new Date();
     const ano = dataAtual.getFullYear();
     let mes = dataAtual.getMonth() + 1;
-    if (mes < 10){
-        mes = '0'+ mes;
+    if (mes < 10) {
+        mes = '0' + mes;
     }
     const q = `SELECT * FROM membros_inativos_mes WHERE ano = '${ano}' AND mes = '${mes}';`;
     // res.send(q);
@@ -145,7 +145,7 @@ export const getAllMulheres = (req, res) => {
 
 export const addMembro = (req, res) => {
     const q =
-        "INSERT INTO membros(`nome`, `email`, `celular`, `telefone`, `genero`, `nascimento`, `civil`, `cep`, `endereco`, `numero`, `complemento`, `admissao`, `obs_admissao`, `situacao`, `conversao`, `batismo`, `chamado`, `outrasinfos`) VALUES(?)";
+        "INSERT INTO membros(`nome`, `email`, `celular`, `telefone`, `genero`, `nascimento`, `civil`, `data_casamento`, `cep`, `endereco`, `numero`, `complemento`, `admissao`, `data_admissao`, `situacao`, `conversao`, `batismo`, `chamado`, `outrasinfos`) VALUES(?)";
 
     const values = [
         req.body.nome,
@@ -155,12 +155,13 @@ export const addMembro = (req, res) => {
         req.body.genero,
         req.body.nascimento,
         req.body.civil,
+        req.body.data_casamento,
         req.body.cep,
         req.body.endereco,
         req.body.numero,
         req.body.complemento,
         req.body.admissao,
-        req.body.obs_admissao,
+        req.body.data_admissao,
         req.body.situacao,
         req.body.conversao,
         req.body.batismo,
@@ -214,7 +215,7 @@ export const addQntMembros2 = (req, res) => {
 
 export const changeMembro = (req, res) => {
     const q =
-        "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `obs_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ? WHERE `id` = ?";
+        "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ? WHERE `id` = ?";
 
     const values = [
         req.body.nome,
@@ -224,12 +225,13 @@ export const changeMembro = (req, res) => {
         req.body.genero,
         req.body.nascimento,
         req.body.civil,
+        req.body.data_casamento,
         req.body.cep,
         req.body.endereco,
         req.body.numero,
         req.body.complemento,
         req.body.admissao,
-        req.body.obs_admissao,
+        req.body.data_admissao,
         req.body.situacao,
         req.body.conversao,
         req.body.batismo,
@@ -265,7 +267,7 @@ export const changeQntMembros = (req, res) => {
 
 export const changeQntMembros2 = (req, res) => {
     const q =
-    `UPDATE membros_inativos_mes SET quantidade = ${req.body.quantidade} WHERE ano = '${req.body.ano}' AND mes = '${req.body.mes}'`;
+        `UPDATE membros_inativos_mes SET quantidade = ${req.body.quantidade} WHERE ano = '${req.body.ano}' AND mes = '${req.body.mes}'`;
 
     const values = [
         req.body.quantidade,
@@ -491,8 +493,19 @@ export const getContas = (req, res) => {
     //res.send(req.params.limit+req.params.offset);
 };
 
-export const checkConta = (req, res) => {
-    const q = `SELECT * FROM lancamentos WHERE id_banco = ?`;
+export const checkContaReceita = (req, res) => {
+    const q = `SELECT COALESCE(SUM(valor),0) AS valor From lancamentos WHERE id_banco = ? AND status = 'Pago' AND categoria = 'Receita'`;
+    // const q = `Select format(SUM(valor),2,'pt_BR') AS valor From tabela_teste WHERE id = ?;`;
+    connection.query(q, [req.params.id], (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const checkContaDespesa = (req, res) => {
+    const q = `SELECT COALESCE(SUM(valor),0) AS valor From lancamentos WHERE id_banco = ? AND status = 'Pago' AND categoria = 'Despesa'`;
+    // const q = `Select format(SUM(valor),2,'pt_BR') AS valor From tabela_teste WHERE id = ?;`;
     connection.query(q, [req.params.id], (err, data) => {
         if (err) return res.json('Erro ao retornar os dados');
         return res.status(200).json(data);
@@ -547,3 +560,546 @@ export const deleteConta = (req, res) => {
         return res.status(200).json("Conta Bancária deletada com sucesso.");
     });
 };
+
+// GERENCIMENTO DOS CENTROS DE CUSTO
+export const getCustos = (req, res) => {
+    const q = `SELECT * FROM centro_custo`;
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const addCusto = (req, res) => {
+    const q =
+        "INSERT INTO centro_custo(`nome`) VALUES(?)";
+
+    const values = [
+        req.body.nome,
+    ];
+
+    connection.query(q, [values], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Centro de Custo adicionado com sucesso.");
+    });
+    // res.send(values);
+}
+
+export const changeCusto = (req, res) => {
+    const q =
+        "UPDATE centro_custo SET `nome` = ? WHERE `id` = ?";
+
+    const values = [
+        req.body.nome,
+    ];
+
+    connection.query(q, [...values, req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Dados do Centro de Custo Atualizados com sucesso");
+    });
+    //res.send(req.params.limit+req.params.offset);
+}
+
+export const deleteCusto = (req, res) => {
+    const q = "DELETE FROM centro_custo WHERE `id` = ?";
+
+    connection.query(q, [req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Centro de Custo deletado com sucesso.");
+    });
+};
+
+// GERENCIMENTO DOS PLANOS DE CONTA
+export const getPlano = (req, res) => {
+    const q = `SELECT * FROM plano_contas`;
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const getPlanoReceita = (req, res) => {
+    const q = `SELECT * FROM plano_contas WHERE tipo = 'Receitas'`;
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const getPlanoDespesa = (req, res) => {
+    const q = `SELECT * FROM plano_contas WHERE tipo = 'Despesas'`;
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const addPlano = (req, res) => {
+    const q =
+        "INSERT INTO plano_contas(`nome`, `tipo`) VALUES(?)";
+
+    const values = [
+        req.body.nome,
+        req.body.tipo,
+    ];
+
+    connection.query(q, [values], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Plano de Contas adicionado com sucesso.");
+    });
+    // res.send(values);
+}
+
+export const changePlano = (req, res) => {
+    const q =
+        "UPDATE plano_contas SET `nome` = ?, `tipo` = ? WHERE `id` = ?";
+
+    const values = [
+        req.body.nome,
+        req.body.tipo,
+    ];
+
+    connection.query(q, [...values, req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Dados do Plano de Contas Atualizados com sucesso");
+    });
+    //res.send(req.params.limit+req.params.offset);
+}
+
+export const deletePlano = (req, res) => {
+    const q = "DELETE FROM plano_contas WHERE `id` = ?";
+
+    connection.query(q, [req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Plano de Contas deletado com sucesso.");
+    });
+};
+
+// GERENCIMENTO DO CADASTRO DE PESSOAS/FORNECEDORES PARA PAGAMENTO
+export const getFornecedor = (req, res) => {
+    const q = `SELECT * FROM pessoa_fornecedor`;
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const addFornecedor = (req, res) => {
+    const q =
+        "INSERT INTO pessoa_fornecedor(`nome`, `cpf_cnpj`, `contato`) VALUES(?)";
+
+    const values = [
+        req.body.nome,
+        req.body.documento,
+        req.body.contato,
+    ];
+
+    connection.query(q, [values], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Pessoa/Fornecedor adicionado com sucesso.");
+    });
+    // res.send(values);
+}
+
+export const changeFornecedor = (req, res) => {
+    const q =
+        "UPDATE pessoa_fornecedor SET `nome` = ?, `cpf_cnpj` = ?, `contato` = ? WHERE `id` = ?";
+
+    const values = [
+        req.body.nome,
+        req.body.documento,
+        req.body.contato,
+    ];
+
+    connection.query(q, [...values, req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Dados da Pessoa/Fornecedor Atualizados com sucesso");
+    });
+    //res.send(req.params.limit+req.params.offset);
+}
+
+export const deleteFornecedor = (req, res) => {
+    const q = "DELETE FROM pessoa_fornecedor WHERE `id` = ?";
+
+    connection.query(q, [req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Pessoa/Fornecedor deletado com sucesso.");
+    });
+};
+
+// RETORNAR VALORES DOS PAGAMENTOS E RECEBIMENTOS PENDENTES
+export const getRecebimentos = (req, res) => {
+
+    const q = `SELECT SUM(valor) AS valor FROM lancamentos WHERE data < '${req.params.date}' AND categoria = 'Receita' AND status = 'Não Pago';`;
+
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const getPagamentos = (req, res) => {
+    const q = `SELECT SUM(valor) AS valor FROM lancamentos WHERE data < '${req.params.date}' AND categoria = 'Despesa' AND status = 'Não Pago';`;
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+// RETORNOS DA PÁGINA DE TRANSAÇÕES
+export const getTransacoes = (req, res) => {
+    const q = `SELECT * FROM lancamentos WHERE data >= '${req.params.init}' AND data <= '${req.params.end}' order by data ASC;`;
+
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset); 
+};
+
+export const getLastIdr = (req, res) => {
+    const q = `SELECT MAX(id_recorrencia) as idr FROM lancamentos`;
+
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset); 
+};
+
+export const getLastLancamentos = (req, res) => {
+    const q = `SELECT * FROM lancamentos ORDER BY data DESC LIMIT 10`;
+
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset); 
+};
+
+export const addTransacao = (req, res) => {
+    const q =
+        "INSERT INTO lancamentos(`data`, `descricao`, `id_banco`, `nome_banco`, `id_pessoa_fornecedor`, `nome_pessoa_fornecedor`, `id_centro_custo`, `nome_centro_custo`, `id_plano_contas`, `nome_plano_contas`, `meio_pagamento`, `categoria`, `valor`, `status`, `id_recorrencia`) VALUES(?)";
+
+    const values = [
+        req.body.data,
+        req.body.descricao,
+        req.body.idbanco,
+        req.body.banco,
+        req.body.idfornecedor,
+        req.body.fornecedor,
+        req.body.idcusto,
+        req.body.custo,
+        req.body.idplano,
+        req.body.plano,
+        req.body.pagamento,
+        req.body.categoria,
+        req.body.valor,
+        req.body.status,
+        req.body.idr
+    ];
+
+    // res.send(q);
+    connection.query(q, [values], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Lançamento adicionado com sucesso.");
+    });
+}
+
+export const changeTransacao = (req, res) => {
+    const q =
+        "UPDATE lancamentos SET `data` = ?, `descricao` = ?, `id_banco` = ?, `nome_banco` = ?, `id_pessoa_fornecedor` = ?, `nome_pessoa_fornecedor` = ?, `id_centro_custo` = ?, `nome_centro_custo` = ?, `id_plano_contas` = ?, `nome_plano_contas` = ?, `meio_pagamento` = ?, `categoria` = ?, `valor` = ?, `status` = ? WHERE `id` = ?";
+
+    const values = [
+        req.body.data,
+        req.body.descricao,
+        req.body.idbanco,
+        req.body.banco,
+        req.body.idfornecedor,
+        req.body.fornecedor,
+        req.body.idcusto,
+        req.body.custo,
+        req.body.idplano,
+        req.body.plano,
+        req.body.pagamento,
+        req.body.categoria,
+        req.body.valor,
+        req.body.status
+    ];
+
+    connection.query(q, [...values, req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Dados do lançamento Atualizados com sucesso");
+    });
+    //res.send(req.params.limit+req.params.offset); 
+}
+
+export const changeStatus = (req, res) => {
+    const q =
+        "UPDATE lancamentos SET `status` = ? WHERE `id` = ?";
+
+    const values = [
+        req.body.status
+    ];
+
+    connection.query(q, [...values, req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Status do lançamento Atualizado com sucesso");
+    });
+    //res.send(req.params.limit+req.params.offset); 
+}
+
+export const deleteLancamento = (req, res) => {
+    const q = "DELETE FROM lancamentos WHERE `id` = ?";
+
+    connection.query(q, [req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Lançamento deletado com sucesso.");
+    });
+};
+
+export const deleteLancamento2 = (req, res) => {
+    const q = "DELETE FROM lancamentos WHERE `id_recorrencia` = ?";
+
+    connection.query(q, [req.params.idr], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Lançamento deletado com sucesso.");
+    });
+};
+
+export const getReceitasAno = (req, res) => {
+    const q = `SELECT * FROM lancamentos WHERE data >= '${req.params.init}' AND data <= '${req.params.end}' AND categoria = 'Receita' AND status = 'Pago'`;
+
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset); 
+};
+
+export const getDespesasAno = (req, res) => {
+    const q = `SELECT * FROM lancamentos WHERE data >= '${req.params.init}' AND data <= '${req.params.end}' AND categoria = 'Despesa' AND status = 'Pago'`;
+
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset); 
+};
+
+// GERENCIAMENTO DE EQUIPES
+export const getEquipes = (req, res) => {
+    const q = `SELECT * FROM equipes WHERE id_membro IS NULL`;
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const getMembrosEquipe = (req, res) => {
+    const q = `SELECT * FROM equipes WHERE id_equipe = ? AND nome_membro IS NOT NULL`;
+    connection.query(q, [req.params.id], (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const getMembroEquipe = (req, res) => {
+    const q = `SELECT * FROM membros WHERE id = ?`;
+    connection.query(q, [req.params.id], (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const checkMembroEquipe = (req, res) => {
+    const q = `SELECT * FROM equipes WHERE id_membro = ? AND id_equipe = ?`;
+    connection.query(q, [req.params.id, req.params.equipe], (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset);
+};
+
+export const addEquipe = (req, res) => {
+    const q =
+        "INSERT INTO equipes(`id_equipe`, `nome_equipe`) VALUES(?)";
+
+    const values = [
+        req.body.id_equipe,
+        req.body.nome,
+    ];
+
+    // res.send(q);
+    connection.query(q, [values], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json(`${req.body.nome} criada com sucesso.`);
+    });
+}
+
+export const addMembroEquipe = (req, res) => {
+    const q =
+        "INSERT INTO equipes(`id_equipe`, `nome_equipe`, `id_membro`, `nome_membro`, `funcao`) VALUES(?)";
+
+    const values = [
+        req.body.id_equipe,
+        req.body.nome_equipe,
+        req.body.id_membro,
+        req.body.nome_membro,
+        req.body.funcao
+    ];
+
+    // res.send(q);
+    connection.query(q, [values], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json(`Membro adicionado a Equipe ${req.body.nome_equipe} com sucesso.`);
+    });
+}
+
+export const getLastequipe = (req, res) => {
+    const q = `SELECT MAX(id_equipe) as id_equipe FROM equipes`;
+
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset); 
+};
+
+export const deleteEquipe = (req, res) => {
+    const q = "DELETE FROM equipes WHERE `id_equipe` = ?";
+
+    connection.query(q, [req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Equipe deletada com sucesso.");
+    });
+};
+
+export const deleteMembroEquipe = (req, res) => {
+    const q = "DELETE FROM equipes WHERE `id_membro` = ?";
+
+    connection.query(q, [req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Membro removido com sucesso.");
+    });
+};
+
+export const changeEquipe = (req, res) => {
+    const q =
+        "UPDATE equipes SET `nome_equipe` = ? WHERE `id_equipe` = ?";
+
+    const values = [
+        req.body.nome
+    ];
+
+    connection.query(q, [...values, req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Equipe atualizada com sucesso");
+    });
+    //res.send(req.params.limit+req.params.offset); 
+}
+
+export const changeMembroEquipe = (req, res) => {
+    const q =
+        "UPDATE equipes SET `funcao` = ? WHERE `id_membro` = ?";
+
+    const values = [
+        req.body.funcao
+    ];
+
+    connection.query(q, [...values, req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Função atualizada com sucesso");
+    });
+    //res.send(req.params.limit+req.params.offset); 
+}
+
+export const getUsers = (req, res) => {
+    const q = `SELECT * FROM users;`;
+
+    connection.query(q, (err, data) => {
+        if (err) return res.json('Erro ao retornar os dados');
+        return res.status(200).json(data);
+    })
+    //res.send(req.params.limit+req.params.offset); 
+};
+
+export const deleteUser = (req, res) => {
+    const q = "DELETE FROM users WHERE `id` = ?";
+
+    connection.query(q, [req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Usuário removido com sucesso.");
+    });
+};
+
+export const changeUser = (req, res) => {
+    // const q =
+    //     "UPDATE users SET `email` = ?, `nome` = ?, `admin` = ?, `super` = ? WHERE `id` = ?";
+
+    // const admin = `'${req.body.admin}'`;
+    // const superAdmin = `'${req.body.super}'`;
+
+    // const values = [
+    //     req.body.email,
+    //     req.body.nome,
+    //     admin,
+    //     superAdmin,
+    //     req.body.id
+    // ];
+
+    const q =
+        `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', admin = '${req.body.admin}', super = '${req.body.super}' WHERE id = ${req.params.id}`;
+
+    connection.query(q, (err) => {
+        if (err) return res.json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a alteração. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
+
+        return res.status(200).json("Dados do Usuário alterados com sucesso.");
+    });
+
+    // res.send(superAdmin); 
+    // connection.query(q, [...values, req.params.id], (err) => {
+    //     if (err) return res.json({
+    //         error: true,
+    //         message: 'Ocorreu um erro ao realizar a alteração. Tente novamente mais tarde ou contate o administrador.',
+    //         data: err
+    //     });
+
+    //     return res.status(200).json("Dados do Usuário alterados com sucesso.");
+    // });
+}
