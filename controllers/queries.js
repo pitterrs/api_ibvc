@@ -919,7 +919,7 @@ export const getEquipes = (req, res) => {
 };
 
 export const getMembrosEquipe = (req, res) => {
-    const q = `SELECT * FROM equipes WHERE id_equipe = ? AND nome_membro IS NOT NULL`;
+    const q = `SELECT * FROM equipes WHERE id_equipe = ? AND nome_membro <> ''`;
     connection.query(q, [req.params.id], (err, data) => {
         if (err) return res.json('Erro ao retornar os dados');
         return res.status(200).json(data);
