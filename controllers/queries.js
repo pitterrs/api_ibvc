@@ -910,7 +910,7 @@ export const getDespesasAno = (req, res) => {
 
 // GERENCIAMENTO DE EQUIPES
 export const getEquipes = (req, res) => {
-    const q = `SELECT * FROM equipes WHERE id_membro IS NULL`;
+    const q = `SELECT * FROM equipes WHERE id_membro = ''`;
     connection.query(q, (err, data) => {
         if (err) return res.json('Erro ao retornar os dados');
         return res.status(200).json(data);
