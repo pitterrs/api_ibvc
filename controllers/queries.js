@@ -910,7 +910,7 @@ export const getDespesasAno = (req, res) => {
 
 // GERENCIAMENTO DE EQUIPES
 export const getEquipes = (req, res) => {
-    const q = `SELECT * FROM equipes WHERE id_membro = ''`;
+    const q = `SELECT * FROM equipes WHERE id_membro IS NULL`;
     connection.query(q, (err, data) => {
         if (err) return res.json('Erro ao retornar os dados');
         return res.status(200).json(data);
@@ -919,7 +919,7 @@ export const getEquipes = (req, res) => {
 };
 
 export const getMembrosEquipe = (req, res) => {
-    const q = `SELECT * FROM equipes WHERE id_equipe = ? AND nome_membro <> ''`;
+    const q = `SELECT * FROM equipes WHERE id_equipe = ? AND nome_membro IS NOT NULL`;
     connection.query(q, [req.params.id], (err, data) => {
         if (err) return res.json('Erro ao retornar os dados');
         return res.status(200).json(data);
