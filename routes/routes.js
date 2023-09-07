@@ -192,7 +192,7 @@ router.post('/adduser', emailvalidation, async (req, res) => {
 
   const password = await bcrypt.hash(req.body.senha, 8);
 
-  const q = "INSERT INTO users(`email`, `key`, `nome`, `senha`, `admin`, `super`) VALUES(?)";
+  const q = "INSERT INTO users(`email`, `key`, `nome`, `senha`, `admin`, `super`, `changemembros`, `viewequipes`, `createequipes`, `viewfinancas`, `createfinancas`) VALUES(?)";
 
   const values = [
     req.body.email,
@@ -200,17 +200,25 @@ router.post('/adduser', emailvalidation, async (req, res) => {
     req.body.nome,
     password,
     req.body.admin,
-    req.body.super
+    req.body.super,
+    req.body.changemembros,
+    req.body.viewequipes,
+    req.body.createequipes,
+    req.body.viewfinancas,
+    req.body.createfinancas
   ]
 
   connection.query(q, [values], (err) => {
     if (err) return res.json({
       error: true,
-      message: 'Ocorreu um erro ao criar o usuário. Favor entre em contato com o administrador do sistema.',
+      message: 'Ocorreu um erro ao criar o usuário. Favor entre em contato com o administrador do sistema ou tente novamente mais tarde.',
       data: err
     });
 
-    return res.status(200).json(`Usuário ${req.body.nome} criar com sucesso.`);
+    return res.status(200).json({
+      error: false,
+      message: `Usuário ${req.body.nome} criado com sucesso.`,
+    });
   });
 })
 
@@ -267,7 +275,10 @@ router.put('/changpass', async (req, res) => {
       data: err
     });
 
-    return res.status(200).json('Senha Alterada com sucesso');
+    return res.status(200).json({
+      error: false,
+      message: 'Senha Alterada com sucesso'
+    });
   });
 
 })

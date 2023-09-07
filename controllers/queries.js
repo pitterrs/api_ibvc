@@ -1048,7 +1048,11 @@ export const getUsers = (req, res) => {
     const q = `SELECT * FROM users;`;
 
     connection.query(q, (err, data) => {
-        if (err) return res.json('Erro ao retornar os dados');
+        if (err) return res.json({
+            error: true,
+            message: 'Erro ao retornar os dados',
+            data: err
+        });
         return res.status(200).json(data);
     })
     //res.send(req.params.limit+req.params.offset); 
@@ -1058,16 +1062,23 @@ export const deleteUser = (req, res) => {
     const q = "DELETE FROM users WHERE `id` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.json({
+            error: true,
+            message: 'Ocorreu um erro ao tentar deletar o usuário. Entre em contato com o administrador do sistema ou tente novamente mais tarde.',
+            data: err
+        });
 
-        return res.status(200).json("Usuário removido com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Usuário removido com sucesso."
+        });
     });
 };
 
 export const changeUser = (req, res) => {
 
     const q =
-        `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', admin = '${req.body.admin}', super = '${req.body.super}' WHERE id = ${req.params.id}`;
+        `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', admin = '${req.body.admin}', super = '${req.body.super}', changemembros = '${req.body.changemembros}', viewequipes = '${req.body.viewequipes}', createequipes = '${req.body.createequipes}', viewfinancas = '${req.body.viewfinancas}', createfinancas = '${req.body.createfinancas}' WHERE id = ${req.params.id}`;
 
     connection.query(q, (err) => {
         if (err) return res.json({
@@ -1076,7 +1087,10 @@ export const changeUser = (req, res) => {
             data: err
         });
 
-        return res.status(200).json("Dados do Usuário alterados com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Dados do Usuário alterados com sucesso."
+        });
     });
 
     // res.send(superAdmin); 
