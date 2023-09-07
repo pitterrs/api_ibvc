@@ -192,23 +192,26 @@ router.post('/adduser', emailvalidation, async (req, res) => {
 
   const password = await bcrypt.hash(req.body.senha, 8);
 
-  const q = `INSERT INTO users(email, key, nome, senha, admin, super, changemembros, viewequipes, createequipes, viewfinancas, createfinancas) VALUES('${req.body.email}', '${req.body.key}', '${req.body.nome}', '${password}', '${req.body.admin}', '${req.body.super}', '${req.body.changemembros}', '${req.body.viewequipes}', '${req.body.createequipes}', '${req.body.viewfinancas}', '${req.body.createfinancas}',)`;
+  // const q = `INSERT INTO users(email, key, nome, senha, admin, super, changemembros, viewequipes, createequipes, viewfinancas, createfinancas) VALUES('${req.body.email}', '${req.body.key}', '${req.body.nome}', '${password}', '${req.body.admin}', '${req.body.super}', '${req.body.changemembros}', '${req.body.viewequipes}', '${req.body.createequipes}', '${req.body.viewfinancas}', '${req.body.createfinancas}')`;
+  const q = "INSERT INTO users(`email`, `key`, `nome`, `senha`, `admin`, `super`, `changemembros`, `viewequipes`, `createequipes`, `viewfinancas`, `createfinancas`) VALUES(?)";
 
-  // const values = [
-  //   req.body.email,
-  //   req.body.key,
-  //   req.body.nome,
-  //   password,
-  //   req.body.admin,
-  //   req.body.super,
-  //   req.body.changemembros,
-  //   req.body.viewequipes,
-  //   req.body.createequipes,
-  //   req.body.viewfinancas,
-  //   req.body.createfinancas
-  // ]
+  const admin = `'${req.body.admin}'`;
 
-  connection.query(q, (err) => {
+  const values = [
+    req.body.email,
+    req.body.key,
+    req.body.nome,
+    password,
+    admin,
+    req.body.super,
+    req.body.changemembros,
+    req.body.viewequipes,
+    req.body.createequipes,
+    req.body.viewfinancas,
+    req.body.createfinancas
+  ]
+
+  connection.query(q, [values], (err) => {
     if (err) return res.json({
       error: true,
       message: 'Ocorreu um erro ao criar o usuário. Favor entre em contato com o administrador do sistema ou tente novamente mais tarde.',
