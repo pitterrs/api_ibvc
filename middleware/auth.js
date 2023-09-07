@@ -14,9 +14,12 @@ const eAdmin = async (req, res, next) => {
 
     try {
         const decode = await promisify(jsonwebtoken.verify)(token, key);
-        req.admin = decode.admin;
         req.super = decode.superAdmin;
-        // console.log(req.admin);
+        req.changemembros = decode.changemembros;
+        req.viewequipes = decode.viewequipes;
+        req.createequipes = decode.createequipes;
+        req.viewfinancas = decode.viewfinancas;
+        req.createfinancas = decode.createfinancas;
         return next();
     } catch (err) {
         return res.json({

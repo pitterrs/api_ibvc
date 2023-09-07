@@ -195,7 +195,13 @@ router.post('/adduser', emailvalidation, async (req, res) => {
   // const q = `INSERT INTO users(email, key, nome, senha, admin, super, changemembros, viewequipes, createequipes, viewfinancas, createfinancas) VALUES('${req.body.email}', '${req.body.key}', '${req.body.nome}', '${password}', '${req.body.admin}', '${req.body.super}', '${req.body.changemembros}', '${req.body.viewequipes}', '${req.body.createequipes}', '${req.body.viewfinancas}', '${req.body.createfinancas}')`;
   const q = "INSERT INTO users(`email`, `key`, `nome`, `senha`, `admin`, `super`, `changemembros`, `viewequipes`, `createequipes`, `viewfinancas`, `createfinancas`) VALUES(?)";
 
-  const admin = `'${req.body.admin}'`;
+  const admin = `${req.body.admin}`;
+  const superadmin = `${req.body.super}`;
+  const changemembros = `${req.body.changemembros}`;
+  const viewequipes = `${req.body.viewequipes}`;
+  const createequipes = `${req.body.createequipes}`;
+  const viewfinancas = `${req.body.viewfinancas}`;
+  const createfinancas = `${req.body.createfinancas}`;
 
   const values = [
     req.body.email,
@@ -203,12 +209,12 @@ router.post('/adduser', emailvalidation, async (req, res) => {
     req.body.nome,
     password,
     admin,
-    req.body.super,
-    req.body.changemembros,
-    req.body.viewequipes,
-    req.body.createequipes,
-    req.body.viewfinancas,
-    req.body.createfinancas
+    superadmin,
+    changemembros,
+    viewequipes,
+    createequipes,
+    viewfinancas,
+    createfinancas
   ]
 
   connection.query(q, [values], (err) => {
@@ -232,8 +238,12 @@ router.post('/login', validation, async (req, res) => {
   const key = req.userdata.key;
   const id = req.userdata.id;
   const user = req.userdata.nome;
-  const admin = req.userdata.admin;
   const superAdmin = req.userdata.super;
+  const changemembros = req.userdata.changemembros;
+  const viewequipes = req.userdata.viewequipes;
+  const createequipes = req.userdata.createequipes;
+  const viewfinancas = req.userdata.viewfinancas;
+  const createfinancas = req.userdata.createfinancas;
 
   if (!(await bcrypt.compare(req.body.senha, senha))) {
     return res.json({
@@ -242,7 +252,7 @@ router.post('/login', validation, async (req, res) => {
     })
   }
 
-  var token = jsonwebtoken.sign({ id, email, admin, superAdmin }, key, { expiresIn: 600 })
+  var token = jsonwebtoken.sign({ id, email, superAdmin, changemembros, viewequipes, createequipes, viewfinancas, createfinancas }, key, { expiresIn: '1d' })
 
   return res.json({
     error: false,
@@ -258,8 +268,12 @@ router.post('/validation', eAdmin, async (req, res) => {
   return res.json({
     error: false,
     message: 'Usuário validado.',
-    admin: req.admin,
-    super: req.super
+    super: req.super,
+    changemembros: req.changemembros,
+    viewequipes: req.viewequipes,
+    createequipes: req.createequipes,
+    viewfinancas: req.viewfinancas,
+    createfinancas: req.createfinancas
   })
 })
 
