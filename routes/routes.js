@@ -258,9 +258,9 @@ router.put('/changpass', async (req, res) => {
 
   const password = await bcrypt.hash(req.body.senha, 8);
 
-  const q = "UPDATE users SET `senha` = ?";
+  const q = "UPDATE users SET `senha` = ? WHERE id = ?";
 
-  connection.query(q, [password], (err) => {
+  connection.query(q, [password, req.body.id], (err) => {
     if (err) return res.json({
       error: true,
       message: 'Ocorreu um erro ao modificar a senha do usuário. Favor entre em contato com o administrador do sistema.',

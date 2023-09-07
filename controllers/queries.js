@@ -1065,19 +1065,6 @@ export const deleteUser = (req, res) => {
 };
 
 export const changeUser = (req, res) => {
-    // const q =
-    //     "UPDATE users SET `email` = ?, `nome` = ?, `admin` = ?, `super` = ? WHERE `id` = ?";
-
-    // const admin = `'${req.body.admin}'`;
-    // const superAdmin = `'${req.body.super}'`;
-
-    // const values = [
-    //     req.body.email,
-    //     req.body.nome,
-    //     admin,
-    //     superAdmin,
-    //     req.body.id
-    // ];
 
     const q =
         `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', admin = '${req.body.admin}', super = '${req.body.super}' WHERE id = ${req.params.id}`;
@@ -1093,13 +1080,4 @@ export const changeUser = (req, res) => {
     });
 
     // res.send(superAdmin); 
-    // connection.query(q, [...values, req.params.id], (err) => {
-    //     if (err) return res.json({
-    //         error: true,
-    //         message: 'Ocorreu um erro ao realizar a alteração. Tente novamente mais tarde ou contate o administrador.',
-    //         data: err
-    //     });
-
-    //     return res.status(200).json("Dados do Usuário alterados com sucesso.");
-    // });
 }
