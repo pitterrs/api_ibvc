@@ -5,8 +5,16 @@ import { connection } from "../connection.js";
 export const getMembro = (req, res) => {
     const q = `SELECT * FROM membros`;
     connection.query(q, (err, data) => {
-        if (err) return res.json('Erro ao retornar os dados');
-        return res.status(200).json(data);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Erro ao retornar os dados',
+            data: err
+        });
+        return res.status(200).json({
+            error: false,
+            message: 'Dados retornados com sucesso',
+            data: data
+        });
     })
     //res.send(req.params.limit+req.params.offset);
 };
@@ -145,7 +153,7 @@ export const getAllMulheres = (req, res) => {
 
 export const addMembro = (req, res) => {
     const q =
-        "INSERT INTO membros(`nome`, `email`, `celular`, `telefone`, `genero`, `nascimento`, `civil`, `data_casamento`, `cep`, `endereco`, `numero`, `complemento`, `admissao`, `data_admissao`, `situacao`, `conversao`, `batismo`, `chamado`, `outrasinfos`) VALUES(?)";
+        "INSERT INTO membros(`nome`, `email`, `celular`, `telefone`, `genero`, `nascimento`, `civil`, `data_casamento`, `cep`, `endereco`, `numero`, `complemento`, `admissao`, `data_admissao`, `situacao`, `conversao`, `batismo`, `chamado`, `outrasinfos`, `foto`) VALUES(?)";
 
     const values = [
         req.body.nome,
@@ -166,13 +174,21 @@ export const addMembro = (req, res) => {
         req.body.conversao,
         req.body.batismo,
         req.body.chamado,
-        req.body.outrasinfos
+        req.body.outrasinfos,
+        req.body.foto
     ];
 
     connection.query(q, [values], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Erro ao tentar criar o novo membro. Entre em contato com o administrador do sistema ou tente novamente mais tarde.',
+            err
+        });
 
-        return res.status(200).json("Membro Adicionado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Membro Adicionado com sucesso."
+        });
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -240,11 +256,18 @@ export const changeMembro = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Dados do membro atualizados com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Dados do membro atualizados com sucesso."
+        });
+        
     });
-    //res.send(req.params.limit+req.params.offset);
 }
 
 export const changeQntMembros = (req, res) => {
@@ -287,9 +310,17 @@ export const deleteMembro = (req, res) => {
     const q = "DELETE FROM membros WHERE `id` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Registro do membro deletado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Registro do membro deletado com sucesso."
+        });
+        
     });
 };
 
@@ -525,9 +556,16 @@ export const addConta = (req, res) => {
     ];
 
     connection.query(q, [values], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Conta Bancária adicionada com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Conta Bancária adicionada com sucesso."
+        });
     });
     // res.send(values);
 }
@@ -544,9 +582,17 @@ export const changeConta = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Dados da Conta Bancária Atualizados com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Dados da Conta Bancária Atualizados com sucesso"
+        });
+        
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -555,9 +601,17 @@ export const deleteConta = (req, res) => {
     const q = "DELETE FROM conta_bancaria WHERE `id` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
-
-        return res.status(200).json("Conta Bancária deletada com sucesso.");
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
+        
+        return res.status(200).json({
+            error: false,
+            message: "Conta Bancária deletada com sucesso."
+        });
+        
     });
 };
 
@@ -580,9 +634,17 @@ export const addCusto = (req, res) => {
     ];
 
     connection.query(q, [values], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Centro de Custo adicionado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Centro de Custo adicionado com sucesso."
+        });
+
     });
     // res.send(values);
 }
@@ -596,9 +658,17 @@ export const changeCusto = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Dados do Centro de Custo Atualizados com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Dados do Centro de Custo Atualizados com sucesso"
+        });
+        
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -607,9 +677,17 @@ export const deleteCusto = (req, res) => {
     const q = "DELETE FROM centro_custo WHERE `id` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Centro de Custo deletado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Centro de Custo deletado com sucesso."
+        });
+        
     });
 };
 
@@ -651,9 +729,17 @@ export const addPlano = (req, res) => {
     ];
 
     connection.query(q, [values], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Plano de Contas adicionado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Plano de Contas adicionado com sucesso."
+        });
+        
     });
     // res.send(values);
 }
@@ -668,9 +754,17 @@ export const changePlano = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Dados do Plano de Contas Atualizados com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Dados do Plano de Contas Atualizados com sucesso."
+        });
+        
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -679,9 +773,17 @@ export const deletePlano = (req, res) => {
     const q = "DELETE FROM plano_contas WHERE `id` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Plano de Contas deletado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Plano de Contas deletado com sucesso."
+        });
+        
     });
 };
 
@@ -706,9 +808,17 @@ export const addFornecedor = (req, res) => {
     ];
 
     connection.query(q, [values], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Pessoa/Fornecedor adicionado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Pessoa/Fornecedor criado com sucesso."
+        });
+
     });
     // res.send(values);
 }
@@ -724,9 +834,17 @@ export const changeFornecedor = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Dados da Pessoa/Fornecedor Atualizados com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Dados da Pessoa/Fornecedor Atualizados com sucesso."
+        });
+        
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -735,9 +853,17 @@ export const deleteFornecedor = (req, res) => {
     const q = "DELETE FROM pessoa_fornecedor WHERE `id` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Pessoa/Fornecedor deletado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Pessoa/Fornecedor deletado com sucesso."
+        });
+        
     });
 };
 
@@ -817,9 +943,17 @@ export const addTransacao = (req, res) => {
 
     // res.send(q);
     connection.query(q, [values], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Lançamento adicionado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Lançamento adicionado com sucesso."
+        });
+
     });
 }
 
@@ -845,9 +979,17 @@ export const changeTransacao = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Dados do lançamento Atualizados com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Dados do lançamento Atualizados com sucesso."
+        });
+        
     });
     //res.send(req.params.limit+req.params.offset); 
 }
@@ -861,9 +1003,17 @@ export const changeStatus = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Status do lançamento Atualizado com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Status do lançamento Atualizado com sucesso."
+        });
+        
     });
     //res.send(req.params.limit+req.params.offset); 
 }
@@ -872,9 +1022,17 @@ export const deleteLancamento = (req, res) => {
     const q = "DELETE FROM lancamentos WHERE `id` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Lançamento deletado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Lançamento deletado com sucesso."
+        });
+        
     });
 };
 
@@ -882,9 +1040,17 @@ export const deleteLancamento2 = (req, res) => {
     const q = "DELETE FROM lancamentos WHERE `id_recorrencia` = ?";
 
     connection.query(q, [req.params.idr], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Lançamento deletado com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Lançamento deletado com sucesso."
+        });
+        
     });
 };
 
@@ -912,8 +1078,16 @@ export const getDespesasAno = (req, res) => {
 export const getEquipes = (req, res) => {
     const q = `SELECT * FROM equipes WHERE id_membro IS NULL`;
     connection.query(q, (err, data) => {
-        if (err) return res.json('Erro ao retornar os dados');
-        return res.status(200).json(data);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
+        return res.status(200).json({
+            error: false,
+            message: "Dados do Usuário alterados com sucesso.",
+            data
+        });
     })
     //res.send(req.params.limit+req.params.offset);
 };
@@ -921,8 +1095,16 @@ export const getEquipes = (req, res) => {
 export const getMembrosEquipe = (req, res) => {
     const q = `SELECT * FROM equipes WHERE id_equipe = ? AND nome_membro IS NOT NULL`;
     connection.query(q, [req.params.id], (err, data) => {
-        if (err) return res.json('Erro ao retornar os dados');
-        return res.status(200).json(data);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
+        return res.status(200).json({
+            error: false,
+            message: "Dados do Usuário alterados com sucesso.",
+            data
+        });
     })
     //res.send(req.params.limit+req.params.offset);
 };
@@ -955,10 +1137,23 @@ export const addEquipe = (req, res) => {
     ];
 
     // res.send(q);
-    connection.query(q, [values], (err) => {
-        if (err) return res.json(err);
+    // connection.query(q, [values], (err) => {
+    //     if (err) return res.json(err);
 
-        return res.status(200).json(`${req.body.nome} criada com sucesso.`);
+    //     return res.status(200).json(`${req.body.nome} criada com sucesso.`);
+    // });
+
+    connection.query(q, [values], (err) => {
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Erro ao tentar criar o nova equipe. Entre em contato com o administrador do sistema ou tente novamente mais tarde.',
+            err
+        });
+
+        return res.status(200).json({
+            error: false,
+            message: "Membro Adicionado com sucesso."
+        });
     });
 }
 
@@ -976,9 +1171,16 @@ export const addMembroEquipe = (req, res) => {
 
     // res.send(q);
     connection.query(q, [values], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json(`Membro adicionado a Equipe ${req.body.nome_equipe} com sucesso.`);
+        return res.status(200).json({
+            error: false,
+            message: `Membro adicionado a Equipe ${req.body.nome_equipe} com sucesso.`
+        });
     });
 }
 
@@ -996,9 +1198,16 @@ export const deleteEquipe = (req, res) => {
     const q = "DELETE FROM equipes WHERE `id_equipe` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Equipe deletada com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Equipe deletada com sucesso."
+        });
     });
 };
 
@@ -1006,9 +1215,16 @@ export const deleteMembroEquipe = (req, res) => {
     const q = "DELETE FROM equipes WHERE `id_membro` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Membro removido com sucesso.");
+        return res.status(200).json({
+            error: false,
+            message: "Membro removido com sucesso."
+        });
     });
 };
 
@@ -1021,9 +1237,16 @@ export const changeEquipe = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Equipe atualizada com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Equipe atualizada com sucesso."
+        });
     });
     //res.send(req.params.limit+req.params.offset); 
 }
@@ -1037,9 +1260,16 @@ export const changeMembroEquipe = (req, res) => {
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
-        if (err) return res.json(err);
+        if (err) return res.status(500).json({
+            error: true,
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
+            data: err
+        });
 
-        return res.status(200).json("Função atualizada com sucesso");
+        return res.status(200).json({
+            error: false,
+            message: "Função atualizada com sucesso."
+        });
     });
     //res.send(req.params.limit+req.params.offset); 
 }
@@ -1048,12 +1278,16 @@ export const getUsers = (req, res) => {
     const q = `SELECT * FROM users;`;
 
     connection.query(q, (err, data) => {
-        if (err) return res.json({
+        if (err) return res.status(500).json({
             error: true,
             message: 'Erro ao retornar os dados',
             data: err
         });
-        return res.status(200).json(data);
+        return res.status(200).json({
+            error: false,
+            message: 'Dados retornados com sucesso.',
+            data: data
+        });
     })
     //res.send(req.params.limit+req.params.offset); 
 };
@@ -1062,7 +1296,7 @@ export const deleteUser = (req, res) => {
     const q = "DELETE FROM users WHERE `id` = ?";
 
     connection.query(q, [req.params.id], (err) => {
-        if (err) return res.json({
+        if (err) return res.status(500).json({
             error: true,
             message: 'Ocorreu um erro ao tentar deletar o usuário. Entre em contato com o administrador do sistema ou tente novamente mais tarde.',
             data: err
@@ -1081,9 +1315,9 @@ export const changeUser = (req, res) => {
         `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', admin = '${req.body.admin}', super = '${req.body.super}', changemembros = '${req.body.changemembros}', viewequipes = '${req.body.viewequipes}', createequipes = '${req.body.createequipes}', viewfinancas = '${req.body.viewfinancas}', createfinancas = '${req.body.createfinancas}' WHERE id = ${req.params.id}`;
 
     connection.query(q, (err) => {
-        if (err) return res.json({
+        if (err) return res.status(500).json({
             error: true,
-            message: 'Ocorreu um erro ao realizar a alteração. Tente novamente mais tarde ou contate o administrador.',
+            message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
             data: err
         });
 

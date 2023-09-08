@@ -86,11 +86,17 @@ import jsonwebtoken from "jsonwebtoken";
 import eAdmin from '../middleware/auth.js'
 import validation from "../middleware/uservalidation.js";
 import emailvalidation from "../middleware/emailvalidation.js";
+import accessValidation from "../middleware/accessvalidation.js";
+import changeUserValidation from "../middleware/changeuservalidation.js";
+import equipesValidation from "../middleware/equipesvalidation.js";
+import equipesValidation2 from "../middleware/equipesvalidation2.js";
+import membroValidation from "../middleware/membrovalidation.js";
+import contasValidation from "../middleware/contasvalidation.js";
 
 const router = express.Router();
 
 // ROTAS PARA GERENCIAMENTO DOS MEMBROS
-router.get("/getmembros", getMembro);
+router.get("/getmembros", accessValidation, getMembro);
 router.get("/totalmembrosativos", getTotalMembros);
 router.get("/totalmembrosinativos", getTotalMembros2);
 router.get("/qntmembrosatual", getQntAtual);
@@ -101,13 +107,13 @@ router.get("/getallinativos", getAllInativos);
 router.get("/getallativos", getAllativos);
 router.get("/getallhomens", getAllHomens);
 router.get("/getallmulheres", getAllMulheres);
-router.post("/addmembro", addMembro);
+router.post("/addmembro", accessValidation, addMembro);
 router.post("/addqntmembros", addQntMembros);
 router.post("/addqntmembros2", addQntMembros2);
-router.put("/changemembro/:id", changeMembro);
+router.put("/changemembro/:id", membroValidation, changeMembro);
 router.put("/changeqntmembros", changeQntMembros);
 router.put("/changeqntmembros2", changeQntMembros2);
-router.delete("/deletemembro/:id", deleteMembro);
+router.delete("/deletemembro/:id", membroValidation, deleteMembro);
 
 // ROTAS PARA GERENCIMENTO DA COMISSAO DE FINANÇAS
 router.get("/getfinancas", getFinancas);
@@ -129,31 +135,31 @@ router.delete("/deletemensageiras/:id", deleteMensageiras);
 
 // ROTAS PARA GERENCIAMENTO DAS CONTAS BANCÁRIAS
 router.get("/getcontas", getContas);
-router.post("/addconta", addConta);
-router.put("/changeconta/:id", changeConta);
-router.delete("/deleteconta/:id", deleteConta);
+router.post("/addconta", contasValidation, addConta);
+router.put("/changeconta/:id", contasValidation, changeConta);
+router.delete("/deleteconta/:id", contasValidation, deleteConta);
 router.get("/checkcontareceita/:id", checkContaReceita);
 router.get("/checkcontadespesa/:id", checkContaDespesa);
 
 // ROTAS PARA GERENCIAMENTO DOS CENTROS DE CUSTO
 router.get("/getcustos", getCustos);
-router.post("/addcusto", addCusto);
-router.put("/changecusto/:id", changeCusto);
-router.delete("/deletecusto/:id", deleteCusto);
+router.post("/addcusto", contasValidation, addCusto);
+router.put("/changecusto/:id", contasValidation, changeCusto);
+router.delete("/deletecusto/:id", contasValidation, deleteCusto);
 
 // ROTAS PARA GERENCIAMENTO DO PLANO DE CONTAS
 router.get("/getplanos", getPlano);
-router.post("/addplano", addPlano);
-router.put("/changeplano/:id", changePlano);
-router.delete("/deleteplano/:id", deletePlano);
+router.post("/addplano", contasValidation, addPlano);
+router.put("/changeplano/:id", contasValidation, changePlano);
+router.delete("/deleteplano/:id", contasValidation, deletePlano);
 router.get("/getplanosreceita", getPlanoReceita);
 router.get("/getplanosdespesa", getPlanoDespesa);
 
 // ROTAS PARA GERENCIAMENTO DAS PESSOAS E FORNECEDORES PARA PAGAMENTO
 router.get("/getfornecedores", getFornecedor);
-router.post("/addfornecedor", addFornecedor);
-router.put("/changefornecedor/:id", changeFornecedor);
-router.delete("/deletefornecedor/:id", deleteFornecedor);
+router.post("/addfornecedor", contasValidation, addFornecedor);
+router.put("/changefornecedor/:id", contasValidation, changeFornecedor);
+router.delete("/deletefornecedor/:id", contasValidation, deleteFornecedor);
 
 // ROTAS PARA RETORNAR OS VALORES PENDENTES DE PAGAMENTO E RECEBIMENTO
 router.get("/getrecebimentos/:date", getRecebimentos)
@@ -163,32 +169,32 @@ router.get("/getpagamentos/:date", getPagamentos);
 router.get("/gettransacoes/:init/:end", getTransacoes);
 router.get("/getlastlancamentos/:init/:end", getLastLancamentos);
 router.get("/getlastidr", getLastIdr);
-router.post("/addtransacao", addTransacao);
-router.put("/changetransacao/:id", changeTransacao);
-router.put("/changestatus/:id", changeStatus);
-router.delete("/deletelancamento/:id", deleteLancamento);
-router.delete("/deletelancamento/:id/:idr", deleteLancamento2);
+router.post("/addtransacao", contasValidation, addTransacao);
+router.put("/changetransacao/:id", contasValidation, changeTransacao);
+router.put("/changestatus/:id", contasValidation, changeStatus);
+router.delete("/deletelancamento/:id", contasValidation, deleteLancamento);
+router.delete("/deletelancamento/:id/:idr", contasValidation, deleteLancamento2);
 router.get("/getreceitasano/:init/:end", getReceitasAno);
 router.get("/getdespesasano/:init/:end", getDespesasAno);
 
 // ROTAS PARA GERENCIAMENTOS DAS EQUIPES
-router.get("/getequipes", getEquipes);
-router.get("/getmembrosequipe/:id", getMembrosEquipe);
+router.get("/getequipes", equipesValidation2, getEquipes);
+router.get("/getmembrosequipe/:id", equipesValidation2, getMembrosEquipe);
 router.get("/getmembroequipe/:id", getMembroEquipe);
 router.get("/checkmembroequipe/:id/:equipe", checkMembroEquipe);
 router.get("/getlastequipe", getLastequipe);
-router.post("/addequipe", addEquipe);
-router.post("/addmembroequipe", addMembroEquipe);
-router.delete("/deleteequipe/:id", deleteEquipe);
-router.delete("/deletemembroequipe/:id", deleteMembroEquipe);
-router.put("/changeequipe/:id", changeEquipe);
-router.put("/changemembroequipe/:id", changeMembroEquipe);
+router.post("/addequipe", equipesValidation, addEquipe);
+router.post("/addmembroequipe", equipesValidation, addMembroEquipe);
+router.delete("/deleteequipe/:id", equipesValidation, deleteEquipe);
+router.delete("/deletemembroequipe/:id", equipesValidation, deleteMembroEquipe);
+router.put("/changeequipe/:id", equipesValidation, changeEquipe);
+router.put("/changemembroequipe/:id", equipesValidation, changeMembroEquipe);
 
 // ROTAS PARA VALIDAÇÃO DE ACESSO
-router.get('/getusers', getUsers);
-router.put('/changeuser/:id', changeUser);
+router.get('/getusers', changeUserValidation, getUsers);
+router.put('/changeuser/:id', changeUserValidation, changeUser);
 
-router.post('/adduser', emailvalidation, async (req, res) => {
+router.post('/adduser', emailvalidation, changeUserValidation, async (req, res) => {
 
   const password = await bcrypt.hash(req.body.senha, 8);
 
@@ -205,7 +211,7 @@ router.post('/adduser', emailvalidation, async (req, res) => {
 
   const values = [
     req.body.email,
-    req.body.key,
+    req.body.chave,
     req.body.nome,
     password,
     admin,
@@ -218,7 +224,7 @@ router.post('/adduser', emailvalidation, async (req, res) => {
   ]
 
   connection.query(q, [values], (err) => {
-    if (err) return res.json({
+    if (err) return res.status(500).json({
       error: true,
       message: 'Ocorreu um erro ao criar o usuário. Favor entre em contato com o administrador do sistema ou tente novamente mais tarde.',
       data: err
@@ -277,9 +283,9 @@ router.post('/validation', eAdmin, async (req, res) => {
   })
 })
 
-router.delete('/deleteuser/:id', deleteUser);
+router.delete('/deleteuser/:id', changeUserValidation, deleteUser);
 
-router.put('/changpass', async (req, res) => {
+router.put('/changpass', changeUserValidation, async (req, res) => {
 
   const password = await bcrypt.hash(req.body.senha, 8);
 
