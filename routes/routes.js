@@ -250,6 +250,7 @@ router.post('/login', validation, async (req, res) => {
   const createequipes = req.userdata.createequipes;
   const viewfinancas = req.userdata.viewfinancas;
   const createfinancas = req.userdata.createfinancas;
+  const foto = req.userdata.foto
 
   if (!(await bcrypt.compare(req.body.senha, senha))) {
     return res.json({
@@ -267,6 +268,7 @@ router.post('/login', validation, async (req, res) => {
     email,
     key,
     token,
+    foto
   })
 })
 
