@@ -6,9 +6,10 @@ const emailvalidation = async (req, res, next) => {
         "SELECT * FROM users WHERE email = ?";
 
     connection.query(q, [req.body.email], (err, data) => {
-        if (err) return res.json({
+        if (err) return res.status(500).json({
             error: true,
-            message: 'Erro de conexão com o banco de dados. Contate o administrador do sistema.'
+            message: 'Erro de conexão com o banco de dados. Contate o administrador do sistema.',
+            error: err
         });
 
         if (data.length > 0) {
