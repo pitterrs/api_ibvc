@@ -155,6 +155,8 @@ export const addMembro = (req, res) => {
     const q =
         "INSERT INTO membros(`nome`, `email`, `celular`, `telefone`, `genero`, `nascimento`, `civil`, `data_casamento`, `cep`, `endereco`, `numero`, `complemento`, `admissao`, `data_admissao`, `situacao`, `conversao`, `batismo`, `chamado`, `outrasinfos`, `foto`) VALUES(?)";
 
+    const foto = req.file?.firebaseUrl ? req.file.firebaseUrl : null;
+
     const values = [
         req.body.nome,
         req.body.email,
@@ -175,7 +177,7 @@ export const addMembro = (req, res) => {
         req.body.batismo,
         req.body.chamado,
         req.body.outrasinfos,
-        req.file.firebaseUrl
+        foto
     ];
 
     connection.query(q, [values], (err) => {
@@ -230,31 +232,60 @@ export const addQntMembros2 = (req, res) => {
 }
 
 export const changeMembro = (req, res) => {
-    const q =
-        "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ?, `foto` = ? WHERE `id` = ?";
+    let q = "";
+    let values = [];
+    const foto = req.file?.firebaseUrl ? req.file.firebaseUrl : null;
 
-    const values = [
-        req.body.nome,
-        req.body.email,
-        req.body.celular,
-        req.body.telefone,
-        req.body.genero,
-        req.body.nascimento,
-        req.body.civil,
-        req.body.data_casamento,
-        req.body.cep,
-        req.body.endereco,
-        req.body.numero,
-        req.body.complemento,
-        req.body.admissao,
-        req.body.data_admissao,
-        req.body.situacao,
-        req.body.conversao,
-        req.body.batismo,
-        req.body.chamado,
-        req.body.outrasinfos,
-        req.file.firebaseUrl
-    ];
+    if (foto) {
+        q = "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ?, `foto` = ? WHERE `id` = ?";
+        values = [
+            req.body.nome,
+            req.body.email,
+            req.body.celular,
+            req.body.telefone,
+            req.body.genero,
+            req.body.nascimento,
+            req.body.civil,
+            req.body.data_casamento,
+            req.body.cep,
+            req.body.endereco,
+            req.body.numero,
+            req.body.complemento,
+            req.body.admissao,
+            req.body.data_admissao,
+            req.body.situacao,
+            req.body.conversao,
+            req.body.batismo,
+            req.body.chamado,
+            req.body.outrasinfos,
+            foto
+        ];
+    } else {
+        q = "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ? WHERE `id` = ?";
+        values = [
+            req.body.nome,
+            req.body.email,
+            req.body.celular,
+            req.body.telefone,
+            req.body.genero,
+            req.body.nascimento,
+            req.body.civil,
+            req.body.data_casamento,
+            req.body.cep,
+            req.body.endereco,
+            req.body.numero,
+            req.body.complemento,
+            req.body.admissao,
+            req.body.data_admissao,
+            req.body.situacao,
+            req.body.conversao,
+            req.body.batismo,
+            req.body.chamado,
+            req.body.outrasinfos
+        ];
+    }
+
+
 
     connection.query(q, [...values, req.params.id], (err) => {
         if (err) return res.status(500).json({
@@ -267,7 +298,7 @@ export const changeMembro = (req, res) => {
             error: false,
             message: "Dados do membro atualizados com sucesso."
         });
-        
+
     });
 }
 
@@ -321,7 +352,7 @@ export const deleteMembro = (req, res) => {
             error: false,
             message: "Registro do membro deletado com sucesso."
         });
-        
+
     });
 };
 
@@ -593,7 +624,7 @@ export const changeConta = (req, res) => {
             error: false,
             message: "Dados da Conta Bancária Atualizados com sucesso"
         });
-        
+
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -607,12 +638,12 @@ export const deleteConta = (req, res) => {
             message: 'Ocorreu um erro ao realizar a operação. Tente novamente mais tarde ou contate o administrador.',
             data: err
         });
-        
+
         return res.status(200).json({
             error: false,
             message: "Conta Bancária deletada com sucesso."
         });
-        
+
     });
 };
 
@@ -669,7 +700,7 @@ export const changeCusto = (req, res) => {
             error: false,
             message: "Dados do Centro de Custo Atualizados com sucesso"
         });
-        
+
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -688,7 +719,7 @@ export const deleteCusto = (req, res) => {
             error: false,
             message: "Centro de Custo deletado com sucesso."
         });
-        
+
     });
 };
 
@@ -740,7 +771,7 @@ export const addPlano = (req, res) => {
             error: false,
             message: "Plano de Contas adicionado com sucesso."
         });
-        
+
     });
     // res.send(values);
 }
@@ -765,7 +796,7 @@ export const changePlano = (req, res) => {
             error: false,
             message: "Dados do Plano de Contas Atualizados com sucesso."
         });
-        
+
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -784,7 +815,7 @@ export const deletePlano = (req, res) => {
             error: false,
             message: "Plano de Contas deletado com sucesso."
         });
-        
+
     });
 };
 
@@ -845,7 +876,7 @@ export const changeFornecedor = (req, res) => {
             error: false,
             message: "Dados da Pessoa/Fornecedor Atualizados com sucesso."
         });
-        
+
     });
     //res.send(req.params.limit+req.params.offset);
 }
@@ -864,7 +895,7 @@ export const deleteFornecedor = (req, res) => {
             error: false,
             message: "Pessoa/Fornecedor deletado com sucesso."
         });
-        
+
     });
 };
 
@@ -990,7 +1021,7 @@ export const changeTransacao = (req, res) => {
             error: false,
             message: "Dados do lançamento Atualizados com sucesso."
         });
-        
+
     });
     //res.send(req.params.limit+req.params.offset); 
 }
@@ -1014,7 +1045,7 @@ export const changeStatus = (req, res) => {
             error: false,
             message: "Status do lançamento Atualizado com sucesso."
         });
-        
+
     });
     //res.send(req.params.limit+req.params.offset); 
 }
@@ -1033,7 +1064,7 @@ export const deleteLancamento = (req, res) => {
             error: false,
             message: "Lançamento deletado com sucesso."
         });
-        
+
     });
 };
 
@@ -1051,7 +1082,7 @@ export const deleteLancamento2 = (req, res) => {
             error: false,
             message: "Lançamento deletado com sucesso."
         });
-        
+
     });
 };
 
@@ -1312,9 +1343,10 @@ export const deleteUser = (req, res) => {
 
 export const changeUser = (req, res) => {
     let q = '';
-    if(req.file.firebaseUrl){
-        q = `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', super = '${req.body.super}', changemembros = '${req.body.changemembros}', viewequipes = '${req.body.viewequipes}', createequipes = '${req.body.createequipes}', viewfinancas = '${req.body.viewfinancas}', createfinancas = '${req.body.createfinancas}', foto = '${req.file.firebaseUrl}' WHERE id = ${req.params.id}`;
-    }else{
+    const foto = req.file?.firebaseUrl ? req.file.firebaseUrl : null;
+    if (foto) {
+        q = `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', super = '${req.body.super}', changemembros = '${req.body.changemembros}', viewequipes = '${req.body.viewequipes}', createequipes = '${req.body.createequipes}', viewfinancas = '${req.body.viewfinancas}', createfinancas = '${req.body.createfinancas}', foto = '${foto}' WHERE id = ${req.params.id}`;
+    } else {
         q = `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', super = '${req.body.super}', changemembros = '${req.body.changemembros}', viewequipes = '${req.body.viewequipes}', createequipes = '${req.body.createequipes}', viewfinancas = '${req.body.viewfinancas}', createfinancas = '${req.body.createfinancas}' WHERE id = ${req.params.id}`;
     }
 

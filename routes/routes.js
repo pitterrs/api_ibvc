@@ -230,7 +230,7 @@ router.post('/adduser', Multer.single("imagem"), emailvalidation, changeUserVali
   const createequipes = `${req.body.createequipes}`;
   const viewfinancas = `${req.body.viewfinancas}`;
   const createfinancas = `${req.body.createfinancas}`;
-  const foto = req.file?.firebaseUrl ? req.file.firebaseUrl : '';
+  const foto = req.file?.firebaseUrl ? req.file.firebaseUrl : null;
 
   const values = [
     req.body.email,
