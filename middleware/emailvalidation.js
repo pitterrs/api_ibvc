@@ -1,6 +1,7 @@
 import { connection } from "../connection.js";
 
 const emailvalidation = async (req, res, next) => {
+
     const q =
         "SELECT * FROM users WHERE email = ?";
 

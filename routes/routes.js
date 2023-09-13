@@ -78,11 +78,8 @@ import {
   changeUser
 } from "../controllers/queries.js";
 import { connection } from "../connection.js";
-
 import bcrypt from 'bcryptjs';
-// import { sign } from "jsonwebtoken";
 import jsonwebtoken from "jsonwebtoken";
-
 import eAdmin from '../middleware/auth.js'
 import validation from "../middleware/uservalidation.js";
 import emailvalidation from "../middleware/emailvalidation.js";
@@ -92,8 +89,34 @@ import equipesValidation from "../middleware/equipesvalidation.js";
 import equipesValidation2 from "../middleware/equipesvalidation2.js";
 import membroValidation from "../middleware/membrovalidation.js";
 import contasValidation from "../middleware/contasvalidation.js";
+import uploadImage from "../middleware/firebase.js";
+import multer from "multer";
+
+const Multer = multer({
+  storage: multer.memoryStorage(),
+  limits: 1024 * 1024, 
+})
 
 const router = express.Router();
+
+router.post("/image", Multer.single("imagem"), uploadImage, async (req, res) => {
+  
+  const q = 'UPDATE users SET `foto` = ? WHERE `id` = 1'
+
+  connection.query(q, [req.file.firebaseUrl], (err) => {
+    if (err) return res.status(500).json({
+      error: true,
+      message: 'Ocorreu um erro ao criar o usuário. Favor entre em contato com o administrador do sistema ou tente novamente mais tarde.',
+      data: err
+    });
+
+    return res.status(200).json({
+      error: false,
+      message: 'Foto adicionada com sucesso.',
+    });
+  });
+
+} );
 
 // ROTAS PARA GERENCIAMENTO DOS MEMBROS
 router.get("/getmembros", accessValidation, getMembro);
@@ -107,10 +130,10 @@ router.get("/getallinativos", getAllInativos);
 router.get("/getallativos", getAllativos);
 router.get("/getallhomens", getAllHomens);
 router.get("/getallmulheres", getAllMulheres);
-router.post("/addmembro", accessValidation, addMembro);
+router.post("/addmembro", Multer.single("imagem"), accessValidation, uploadImage, addMembro);
 router.post("/addqntmembros", addQntMembros);
 router.post("/addqntmembros2", addQntMembros2);
-router.put("/changemembro/:id", membroValidation, changeMembro);
+router.put("/changemembro/:id", Multer.single("imagem"), membroValidation, uploadImage, changeMembro);
 router.put("/changeqntmembros", changeQntMembros);
 router.put("/changeqntmembros2", changeQntMembros2);
 router.delete("/deletemembro/:id", membroValidation, deleteMembro);
@@ -192,16 +215,15 @@ router.put("/changemembroequipe/:id", equipesValidation, changeMembroEquipe);
 
 // ROTAS PARA VALIDAÇÃO DE ACESSO
 router.get('/getusers', changeUserValidation, getUsers);
-router.put('/changeuser/:id', changeUserValidation, changeUser);
+router.put('/changeuser/:id', Multer.single("imagem"), changeUserValidation, uploadImage, changeUser);
 
-router.post('/adduser', emailvalidation, changeUserValidation, async (req, res) => {
+router.post('/adduser', Multer.single("imagem"), emailvalidation, changeUserValidation, uploadImage, async (req, res) => {
 
   const password = await bcrypt.hash(req.body.senha, 8);
 
   // const q = `INSERT INTO users(email, key, nome, senha, admin, super, changemembros, viewequipes, createequipes, viewfinancas, createfinancas) VALUES('${req.body.email}', '${req.body.key}', '${req.body.nome}', '${password}', '${req.body.admin}', '${req.body.super}', '${req.body.changemembros}', '${req.body.viewequipes}', '${req.body.createequipes}', '${req.body.viewfinancas}', '${req.body.createfinancas}')`;
-  const q = "INSERT INTO users(`email`, `key`, `nome`, `senha`, `admin`, `super`, `changemembros`, `viewequipes`, `createequipes`, `viewfinancas`, `createfinancas`) VALUES(?)";
+  const q = "INSERT INTO users(`email`, `key`, `nome`, `senha`, `super`, `changemembros`, `viewequipes`, `createequipes`, `viewfinancas`, `createfinancas`, `foto`) VALUES(?)";
 
-  const admin = `${req.body.admin}`;
   const superadmin = `${req.body.super}`;
   const changemembros = `${req.body.changemembros}`;
   const viewequipes = `${req.body.viewequipes}`;
@@ -214,14 +236,16 @@ router.post('/adduser', emailvalidation, changeUserValidation, async (req, res) 
     req.body.chave,
     req.body.nome,
     password,
-    admin,
     superadmin,
     changemembros,
     viewequipes,
     createequipes,
     viewfinancas,
-    createfinancas
+    createfinancas,
+    req.file.firebaseUrl,
+    // req.file.imageName
   ]
+
 
   connection.query(q, [values], (err) => {
     if (err) return res.status(500).json({

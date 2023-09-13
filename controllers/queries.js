@@ -175,7 +175,7 @@ export const addMembro = (req, res) => {
         req.body.batismo,
         req.body.chamado,
         req.body.outrasinfos,
-        req.body.foto
+        req.file.firebaseUrl
     ];
 
     connection.query(q, [values], (err) => {
@@ -231,7 +231,7 @@ export const addQntMembros2 = (req, res) => {
 
 export const changeMembro = (req, res) => {
     const q =
-        "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ? WHERE `id` = ?";
+        "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ?, `foto` = ? WHERE `id` = ?";
 
     const values = [
         req.body.nome,
@@ -252,7 +252,8 @@ export const changeMembro = (req, res) => {
         req.body.conversao,
         req.body.batismo,
         req.body.chamado,
-        req.body.outrasinfos
+        req.body.outrasinfos,
+        req.file.firebaseUrl
     ];
 
     connection.query(q, [...values, req.params.id], (err) => {
@@ -1310,9 +1311,12 @@ export const deleteUser = (req, res) => {
 };
 
 export const changeUser = (req, res) => {
-
-    const q =
-        `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', admin = '${req.body.admin}', super = '${req.body.super}', changemembros = '${req.body.changemembros}', viewequipes = '${req.body.viewequipes}', createequipes = '${req.body.createequipes}', viewfinancas = '${req.body.viewfinancas}', createfinancas = '${req.body.createfinancas}' WHERE id = ${req.params.id}`;
+    let q = '';
+    if(req.file.firebaseUrl){
+        q = `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', super = '${req.body.super}', changemembros = '${req.body.changemembros}', viewequipes = '${req.body.viewequipes}', createequipes = '${req.body.createequipes}', viewfinancas = '${req.body.viewfinancas}', createfinancas = '${req.body.createfinancas}', foto = '${req.file.firebaseUrl}' WHERE id = ${req.params.id}`;
+    }else{
+        q = `UPDATE users SET email = '${req.body.email}', nome = '${req.body.nome}', super = '${req.body.super}', changemembros = '${req.body.changemembros}', viewequipes = '${req.body.viewequipes}', createequipes = '${req.body.createequipes}', viewfinancas = '${req.body.viewfinancas}', createfinancas = '${req.body.createfinancas}' WHERE id = ${req.params.id}`;
+    }
 
     connection.query(q, (err) => {
         if (err) return res.status(500).json({
@@ -1323,7 +1327,8 @@ export const changeUser = (req, res) => {
 
         return res.status(200).json({
             error: false,
-            message: "Dados do Usuário alterados com sucesso."
+            message: "Dados do Usuário alterados com sucesso.",
+            foto: req.file.firebaseUrl ? req.file.firebaseUrl : null
         });
     });
 
