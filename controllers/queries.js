@@ -153,7 +153,7 @@ export const getAllMulheres = (req, res) => {
 
 export const addMembro = (req, res) => {
     const q =
-        "INSERT INTO membros(`nome`, `email`, `celular`, `telefone`, `genero`, `nascimento`, `civil`, `data_casamento`, `cep`, `endereco`, `numero`, `complemento`, `admissao`, `data_admissao`, `situacao`, `conversao`, `batismo`, `chamado`, `outrasinfos`, `foto`) VALUES(?)";
+        "INSERT INTO membros(`nome`, `email`, `celular`, `telefone`, `genero`, `nascimento`, `civil`, `conjuge`, `data_casamento`, `cep`, `endereco`, `numero`, `complemento`, `admissao`, `data_admissao`, `situacao`, `conversao`, `batismo`, `chamado`, `outrasinfos`, `foto`) VALUES(?)";
 
     const foto = req.file?.firebaseUrl ? req.file.firebaseUrl : null;
 
@@ -165,6 +165,7 @@ export const addMembro = (req, res) => {
         req.body.genero,
         req.body.nascimento,
         req.body.civil,
+        req.body.nome_conjuge,
         req.body.data_casamento,
         req.body.cep,
         req.body.endereco,
@@ -237,7 +238,7 @@ export const changeMembro = (req, res) => {
     const foto = req.file?.firebaseUrl ? req.file.firebaseUrl : null;
 
     if (foto) {
-        q = "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ?, `foto` = ? WHERE `id` = ?";
+        q = "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `conjuge` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ?, `foto` = ? WHERE `id` = ?";
         values = [
             req.body.nome,
             req.body.email,
@@ -246,6 +247,7 @@ export const changeMembro = (req, res) => {
             req.body.genero,
             req.body.nascimento,
             req.body.civil,
+            req.body.nome_conjuge,
             req.body.data_casamento,
             req.body.cep,
             req.body.endereco,
@@ -261,7 +263,7 @@ export const changeMembro = (req, res) => {
             foto
         ];
     } else {
-        q = "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ? WHERE `id` = ?";
+        q = "UPDATE membros SET `nome` = ?, `email` = ?, `celular` = ?, `telefone`  = ?, `genero`  = ?, `nascimento` = ?, `civil` = ?, `conjuge` = ?, `data_casamento` = ?, `cep` = ?, `endereco` = ?, `numero` = ?, `complemento` = ?, `admissao` = ?, `data_admissao` = ?, `situacao` = ?, `conversao` = ?, `batismo` = ?, `chamado` = ?, `outrasinfos` = ? WHERE `id` = ?";
         values = [
             req.body.nome,
             req.body.email,
@@ -270,6 +272,7 @@ export const changeMembro = (req, res) => {
             req.body.genero,
             req.body.nascimento,
             req.body.civil,
+            req.body.nome_conjuge,
             req.body.data_casamento,
             req.body.cep,
             req.body.endereco,
