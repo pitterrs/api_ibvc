@@ -1366,7 +1366,7 @@ export const changeUser = (req, res) => {
         return res.status(200).json({
             error: false,
             message: "Dados do Usuário alterados com sucesso.",
-            foto: req.file.firebaseUrl ? req.file.firebaseUrl : null
+            foto: req.file?.firebaseUrl ? req.file.firebaseUrl : null
         });
     });
 
